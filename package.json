@@ -11,10 +11,14 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "express": "~4.13.4",
+    "flexboxgrid": "^6.3.1",
     "jade": "~1.11.0",
+    "material-ui": "^0.15.4",
     "mongoose": "^4.6.0",
     "morgan": "~1.7.0",
     "node-env-file": "^0.1.8",
+    "react-sidebar": "^2.2.1",
+    "react-tap-event-plugin": "^1.0.0",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {

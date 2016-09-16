@@ -1,7 +1,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+import Main from 'app/components/Main.jsx';
+
+injectTapEventPlugin();
 
 ReactDOM.render(
-  <h1>Hello World</h1>,
+  <Main />,
   document.getElementById('app')
 );
