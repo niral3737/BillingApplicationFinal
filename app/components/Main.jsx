@@ -1,19 +1,34 @@
 import React from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
-
+import {connect} from 'react-redux';
 import MainAppBar from 'app/components/MainAppBar.jsx';
 
 require('style!css!flexboxgrid/dist/flexboxgrid.min.css');
 
 class Main extends React.Component {
   render(){
+    var {auth} = this.props;
+    var styles = {
+      containerStyle : {
+        marginTop : '64px'
+      }
+    };
     return (
-      <MuiThemeProvider>
+      <div>
         <MainAppBar />
-      </MuiThemeProvider>
+        <div className="container" style={styles.containerStyle}>
+          <h1>{this.props.children}</h1>
+        </div>
+      </div>
     );
   }
 }
 
 module.exports = Main;
+
+export default connect(
+  (state) => {
+    return {
+      auth : state.auth
+    };
+  }
+)(Main)
