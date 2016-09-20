@@ -6,7 +6,6 @@ class Products extends React.Component {
     return (
       <div>
         <h1>This is Products</h1>
-        <Link to="/">Login link</Link>
       </div>
     );
   }

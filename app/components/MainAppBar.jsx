@@ -32,6 +32,7 @@ class MainAppBar extends React.Component {
   }
   handleSignOut(){
     const {dispatch} = this.props;
+    localStorage.removeItem('token');
     dispatch(actions.signOut());
   }
   render(){
@@ -62,12 +63,12 @@ class MainAppBar extends React.Component {
             <Menu desktop={true}>
               <ListItem primaryText="Home" href="/#/dashboard" leftIcon={<Home />} onTouchTap={this._handleClick}></ListItem>
               <ListItem primaryText="Products" href="/#/dashboard/products" leftIcon={<ViewList />} onTouchTap={this._handleClick}></ListItem>
-              <ListItem primaryText="Customers" leftIcon={<Group />}></ListItem>
+              <ListItem primaryText="Customers" leftIcon={<Group />} onTouchTap={this._handleClick}></ListItem>
               <Divider></Divider>
-              <ListItem primaryText="Manage Business" leftIcon={<BusinessCenter />}></ListItem>
-              <ListItem primaryText="Settings" leftIcon={<Settings />}></ListItem>
+              <ListItem primaryText="Manage Business" leftIcon={<BusinessCenter />} onTouchTap={this._handleClick}></ListItem>
+              <ListItem primaryText="Settings" leftIcon={<Settings />} onTouchTap={this._handleClick}></ListItem>
               <Divider></Divider>
-              <ListItem primaryText="Help & Feedback" leftIcon={<Feedback />}></ListItem>
+              <ListItem primaryText="Help & Feedback" leftIcon={<Feedback />} onTouchTap={this._handleClick}></ListItem>
               <ListItem primaryText="Sign out" onTouchTap={this.handleSignOut.bind(this)} leftIcon={<PowerSettingsNew />}></ListItem>
             </Menu>
           </Drawer>

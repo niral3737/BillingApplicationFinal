@@ -9,6 +9,7 @@ import {Step, Stepper, StepLabel} from 'material-ui/Stepper';
 import AutoComplete from 'material-ui/AutoComplete';
 import DatePicker from 'material-ui/DatePicker';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
+import Snackbar from 'material-ui/Snackbar';
 import * as actions from 'app/actions/actions.jsx';
 import {connect} from 'react-redux';
 
@@ -17,6 +18,8 @@ class SignUp extends React.Component {
   state = {
     finished: false,
     stepIndex: 0,
+    snackBarOpen : false,
+    snackBarMessage : '',
     fieldValues : {
       firstName : '',
       lastName : '',
@@ -41,15 +44,49 @@ class SignUp extends React.Component {
   };
 
   handleNext = () => {
-    const {stepIndex, fieldValues} = this.state;
-    const email = fieldValues.email;
-    const password = fieldValues.password;
+    const {stepIndex, fieldValues, cPassword} = this.state;
+    if(stepIndex === 0 && (fieldValues.firstName === '' || fieldValues.lastName === '')){
+      return this.setState({
+        snackBarOpen : true,
+        snackBarMessage : 'Please provide first-name and last-name'
+      });
+    }
+    if(stepIndex === 1 && (fieldValues.shopNumber === '' || fieldValues.street === '' || fieldValues.pinCode === '' || fieldValues.city === '' || fieldValues.stateProvince === '' || fieldValues.country === '')){
+      return this.setState({
+        snackBarOpen : true,
+        snackBarMessage : 'Please provide all the details'
+      });
+    }
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(stepIndex === 2){
+      if(!re.test(fieldValues.email)){
+        return this.setState({
+          snackBarOpen : true,
+          snackBarMessage : 'Please provide a valid email'
+        });
+      }
+      var repassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,50}$/;
+      if(!repassword.test(fieldValues.password)){
+        return this.setState({
+          snackBarOpen : true,
+          snackBarMessage : 'Please provide a valid password'
+        });
+      }
+      if(fieldValues.password !== cPassword){
+        return this.setState({
+          snackBarOpen : true,
+          snackBarMessage : 'Password doesn\'t match. Try again.'
+        });
+      }
+    }
     var {dispatch} = this.props;
     this.setState({
       stepIndex: stepIndex + 1,
       finished: stepIndex >= 2,
     });
     if(stepIndex >= 2){
+      const email = fieldValues.email;
+      const password = fieldValues.password;
       axios.post('/users/signup', {
         user : this.state.fieldValues
       })
@@ -61,7 +98,7 @@ class SignUp extends React.Component {
             password : password
           })
           .then((response) => {
-            dispatch(actions.signIn('123', '234'));
+            dispatch(actions.signIn(response.data.token, response.data.user));
           }).catch((err) => {
             console.log(err);
           });
@@ -164,6 +201,7 @@ class SignUp extends React.Component {
               value={this.state.fieldValues.firstName}
               onChange={this.handleFirstName.bind(this)}
               hintText="eg. John"
+              name="firstName"
               floatingLabelText="First Name"/>
             <br></br>
             <TextField
@@ -275,7 +313,13 @@ class SignUp extends React.Component {
         return 'You\'re a long way from home sonny jim!';
     }
   }
-
+  handleRequestClose(reason){
+    if(reason === 'timeout'){
+      this.setState({
+        snackBarOpen : false
+      });
+    }
+  }
   render(){
     const {finished, stepIndex} = this.state;
     const contentStyle = {margin: '0 16px'};
@@ -359,6 +403,18 @@ class SignUp extends React.Component {
                       onTouchTap={this.handleNext}
                     />
                   </div>
+                  {(stepIndex == 0) ? (
+                  <div>
+                    <FlatButton
+                    label="Already have an account?"
+                    href="/#/"
+                    style={{marginTop: 40}}
+                    primary={true}
+                    />
+                  </div>
+                ) : (
+                  <div></div>
+                )}
                 </div>
               )}
             </div>
@@ -366,6 +422,12 @@ class SignUp extends React.Component {
         </div>
         <div className="row center-xs bottom-xs" style={style.lowerRow}>
         </div>
+        <Snackbar
+          open={this.state.snackBarOpen}
+          message={this.state.snackBarMessage}
+          onRequestClose={this.handleRequestClose.bind(this)}
+          autoHideDuration={4000}
+        />
       </div>
     );
   }

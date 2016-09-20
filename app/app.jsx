@@ -1,5 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {Route, Router, hashHistory, IndexRoute} from 'react-router';
@@ -15,18 +16,59 @@ import Products from 'app/components/Products.jsx';
 injectTapEventPlugin();
 
 var requireLogin = (nextState, replace, next) => {
-  if (!store.getState().auth.isLoggedIn){
-    replace('/');
+  if(!store.getState().auth.isLoggedIn){
+    const token = localStorage.getItem('token');
+    if(!token){
+      replace('/');
+      next();
+    }else if (token) {
+      axios.get('/isvalidtoken', {
+        headers: {
+          "x-access-token": token
+        }
+      }).then((response) => {
+        if(response.data.message === 'success'){
+          next();
+        }else{
+          replace('/');
+          next();
+        }
+      }).catch((err) => {
+        replace('/');
+        next();
+      });
+    }
+  }else{
+    next();
   }
-  next();
 };
 
 var redirectIfLoggedIn = (nextState, replace, next) => {
-  console.log(store.getState().auth.isLoggedIn);
-  if (store.getState().auth.isLoggedIn){
-    replace('/dashboard');
+  const token = localStorage.getItem('token');
+  if (token) {
+    axios.get('/isvalidtoken', {
+      headers: {
+        "x-access-token": token
+      }
+    }).then((response) => {
+      if(response.data.message === 'success'){
+        console.log(response.data);
+        replace('/dashboard');
+        next();
+      }else{
+        next();
+      }
+    }).catch((err) => {
+      console.log(err);
+      next();
+    });
+  }else{
+    next();
   }
-  next();
+  // if (store.getState().auth.isLoggedIn){
+  //   replace('/dashboard');
+  // }
+  // next();
 };
 
 function handleChange() {
@@ -44,7 +86,7 @@ ReactDOM.render(
       <Router history={hashHistory}>
         <Route path="/">
           <Route path="dashboard" component={Main} onEnter={requireLogin}>
-            <Route path="products" component={Products}></Route>
+            <Route path="products" component={Products} onEnter={requireLogin}></Route>
             <IndexRoute component={Home}></IndexRoute>
           </Route>
           <Route path="signup" component={SignUp} onEnter={redirectIfLoggedIn}></Route>

@@ -9,7 +9,9 @@ class Main extends React.Component {
     var {auth} = this.props;
     var styles = {
       containerStyle : {
-        marginTop : '64px'
+        marginTop : '64px',
+        height : '100vh',
+        backgroundColor : 'white'
       }
     };
     return (

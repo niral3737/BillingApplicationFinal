@@ -3,8 +3,8 @@ import React from 'react';
 class Home extends React.Component {
   render(){
     return (
-      <div>
-        <h1>Hello World</h1>
+      <div className="row center-xs">
+        <h4>Home content will be avalilable here</h4>
       </div>
     );
   }
